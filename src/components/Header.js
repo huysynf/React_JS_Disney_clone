@@ -1,11 +1,62 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import styled from 'styled-components';
 import {Link} from 'react-router-dom';
+import {auth, provider} from '../firebase';
+import {useDispatch, useSelector} from 'react-redux';
+import {useHistory} from 'react-router-dom';
+import {
+  selectUserName,
+  selectUserPhoto,
+  setSignOutState, setUserLoginDetails,
+} from '../app/reducers/users/userSlide';
 
 const Header = () => {
 
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const userName = useSelector(selectUserName);
+  const userPhoto = useSelector(selectUserPhoto);
+
+  useEffect(() => {
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        setUser(user);
+        history.push('/home');
+      }
+    });
+    return () => {
+    };
+  }, [userName]);
+
   const handleAuth = () => {
 
+    if (!userName) {
+      auth.signInWithPopup(provider)
+          .then(res => {
+            console.log(res);
+          })
+          .catch(err => {
+            console.log(err);
+          });
+    } else if (userName) {
+      auth.signOut()
+          .then(res => {
+            dispatch(setSignOutState());
+            history.push('/');
+          })
+          .catch(err => {
+            console.log(err);
+          });
+    }
+  };
+
+  const setUser = (user) => {
+
+    dispatch(setUserLoginDetails({
+      name: user.displayName,
+      email: user.email,
+      photo: user.photo
+    }))
   }
 
   return (
@@ -45,7 +96,12 @@ const Header = () => {
             <span>Movies</span>
           </Link>
         </NavMenu>
-        <Login>Login</Login>
+        <Login onClick={() => {
+          handleAuth();
+        }}
+        >
+          Login
+        </Login>
       </Nav>
   );
 };
@@ -157,8 +213,8 @@ const Login = styled.a`
   transition: all .2s ease;
   cursor: pointer;
   color: #fff;
-  box-shadow:0 0 54px 5px  #282c34;
-  
+  box-shadow: 0 0 54px 5px #282c34;
+
   &:hover {
     background-color: #f9f9f9 !important;
     color: #000 !important;
