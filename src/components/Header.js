@@ -8,7 +8,8 @@ import {
   selectUserName,
   selectUserPhoto,
   setSignOutState, setUserLoginDetails,
-} from '../app/reducers/users/userSlide';
+} from '../features/users/userSlide';
+
 
 const Header = () => {
 
@@ -33,7 +34,7 @@ const Header = () => {
     if (!userName) {
       auth.signInWithPopup(provider)
           .then(res => {
-            console.log(res);
+            setUser(res.user)
           })
           .catch(err => {
             console.log(err);
@@ -55,7 +56,7 @@ const Header = () => {
     dispatch(setUserLoginDetails({
       name: user.displayName,
       email: user.email,
-      photo: user.photo
+      photo: user.photoURL
     }))
   }
 
@@ -64,44 +65,57 @@ const Header = () => {
         <Logo>
           <img src="/images/logo.svg" alt=""/>
         </Logo>
+        {!userName ?
+            (
+                <Login onClick={() => {
+                  handleAuth();
+                }}
+                >
+                  Login
+                </Login>
+            ):
+            (
+              <>
+                <NavMenu>
+                  <Link to={'/home'}>
+                    <img src={'/images/home-icon.svg'} alt={''}/>
+                    <span>Home</span>
+                  </Link>
 
-        <NavMenu>
-          <Link to={'/home'}>
-            <img src={'/images/home-icon.svg'} alt={''}/>
-            <span>Home</span>
-          </Link>
+                  <Link to={'/home'}>
+                    <img src={'/images/search-icon.svg'} alt={''}/>
+                    <span>Search</span>
+                  </Link>
 
-          <Link to={'/home'}>
-            <img src={'/images/search-icon.svg'} alt={''}/>
-            <span>Search</span>
-          </Link>
+                  <Link to={'/home'}>
+                    <img src={'/images/home-icon.svg'} alt={''}/>
+                    <span>Home</span>
+                  </Link>
 
-          <Link to={'/home'}>
-            <img src={'/images/home-icon.svg'} alt={''}/>
-            <span>Home</span>
-          </Link>
+                  <Link to={'/home'}>
+                    <img src={'/images/watchlist-icon.svg'} alt={''}/>
+                    <span>WatchList</span>
+                  </Link>
 
-          <Link to={'/home'}>
-            <img src={'/images/watchlist-icon.svg'} alt={''}/>
-            <span>WatchList</span>
-          </Link>
+                  <Link to={'/home'}>
+                    <img src={'/images/original-icon.svg'} alt={''}/>
+                    <span>Original</span>
+                  </Link>
 
-          <Link to={'/home'}>
-            <img src={'/images/original-icon.svg'} alt={''}/>
-            <span>Original</span>
-          </Link>
-
-          <Link to={'/home'}>
-            <img src={'/images/movie-icon.svg'} alt={''}/>
-            <span>Movies</span>
-          </Link>
-        </NavMenu>
-        <Login onClick={() => {
-          handleAuth();
-        }}
-        >
-          Login
-        </Login>
+                  <Link to={'/home'}>
+                    <img src={'/images/movie-icon.svg'} alt={''}/>
+                    <span>Movies</span>
+                  </Link>
+                </NavMenu>
+                <SignOut>
+                  <UserImage src ={userPhoto} title={userName} alt ={userName} />
+                  <Dropdown>
+                    <span onClick={()=>{handleAuth()}}>SignOut</span>
+                  </Dropdown>
+                </SignOut>
+                </>
+            )
+        }
       </Nav>
   );
 };
@@ -221,4 +235,43 @@ const Login = styled.a`
     border-color: transparent !important;
   }
 `;
+
+
+const UserImage = styled.img`
+  height: 100%;
+  border-radius: 50%;
+`;
+
+const Dropdown = styled.div`
+  position: absolute;
+  top: 50px;
+  right: 30px;
+  background-color: rgba(151, 151, 151, .34);
+  border-radius: 5px;
+  border: 1px solid #fff;
+  font-size: 14px;
+  letter-spacing: 1.5px;
+  padding: 5px 10px;
+  transition: all 500ms ease;
+  opacity: 0;
+  visibility: hidden;
+  cursor: pointer;
+`;
+const SignOut = styled.div`
+  height: 100%;
+  max-height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  
+  &:hover{
+    ${Dropdown} {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+`;
 export default Header;
+
+
