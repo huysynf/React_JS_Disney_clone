@@ -2,11 +2,11 @@ import React from 'react';
 import styled from 'styled-components';
 import {Link} from 'react-router-dom';
 import {useSelector} from 'react-redux';
-import {selectNewDisNey, selectTrending} from '../features/movies/movieSlide';
+import {selectNewDisNey} from '../features/movies/movieSlide';
 
 const NewFilm = () => {
 
-  const movies = useSelector(selectTrending);
+  const movies = useSelector(selectNewDisNey);
 
   return (
       <Container>

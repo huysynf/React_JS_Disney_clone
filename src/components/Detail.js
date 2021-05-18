@@ -1,19 +1,44 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
+import {useParams} from 'react-router-dom';
+import db from '../firebase';
 
 const Detail = () => {
+  const {id} = useParams();
+  const [detail, setDetail] = useState({});
+
+  useEffect(() => {
+    const getDetail = () => db.collection('movies')
+        .doc(id)
+        .get()
+        .then(doc => {
+          if (doc.exists) {
+            setDetail(doc.data());
+          } else {
+            console.log('not data');
+          }
+        }).catch(error => {
+          console.log('has error', error);
+        });
+    return () => {
+      getDetail();
+    };
+  }, [id]);
+
+  console.log(detail);
+
   return (
       <Container>
         <Background>
           <img
-              src="https://prod-ripcut-delivery.disney-plus.net/v1/variant/disney/49B92C046117E89BC9243A68EE277A3B30D551D4599F23C10BF0B8C1E90AEFB6/scale?width=1440&aspectRatio=1.78&format=jpeg"
-              alt=""/>
+              src={detail.backgroundImg}
+              alt={detail.title}/>
         </Background>
 
         <ImageTitle>
           <img
-              src="https://prod-ripcut-delivery.disney-plus.net/v1/variant/disney/5C647DF3FFBFA343CFEA84AC715148F25F9E86F398B408010CC403E7654FB908/scale?width=1440&aspectRatio=1.78"
-              alt=""/>
+              src={detail.titleImg}
+              alt={detail.title} />
         </ImageTitle>
         <ContentMela>
           <Control>
@@ -21,7 +46,30 @@ const Detail = () => {
               <img src="/images/play-icon-black.png" alt=""/>
               <span>Play</span>
             </Player>
+
+            <Trailer>
+              <img src="/images/play-icon-white.png" alt=""/>
+              <span>Trailer</span>
+            </Trailer>
+            <AddList>
+              <span/>
+              <span/>
+            </AddList>
+
+            <GroupWatch>
+              <div>
+                <img src="/images/group-icon.png" alt=""/>
+              </div>
+            </GroupWatch>
           </Control>
+
+          <SubTitle>
+            {detail.subTitle}
+          </SubTitle>
+
+          <Description>
+            {detail.description}
+          </Description>
         </ContentMela>
       </Container>
   );
@@ -100,26 +148,117 @@ const Player = styled.button`
   height: 56px;
   border-radius: 4px;
   align-items: center;
-  cursor:pointer;
+  cursor: pointer;
   display: flex;
   text-align: center;
   text-transform: uppercase;
   background: rgb(249, 249, 249);
   border: none;
-  color: rgb(0,0,0);
- 
- img{
-  width: 32px;
- }
- 
- &:hover{
-  background: rgb(198, 198, 198);
- }
- 
- @media (max-width: 768px)
- {
+  color: rgb(0, 0, 0);
+
+  img {
+    width: 32px;
+  }
+
+  &:hover {
+    background: rgb(198, 198, 198);
+  }
+
+  @media (max-width: 768px) {
     height: 45px;
- }
+    padding: 0 22px;
+    font-size: 12px;
+    margin: 0 10px 0 0;
+
+    img {
+      width: 25px;
+    }
+  }
 
 `;
+
+const Trailer = styled(Player)`
+  background: rgba(0, 0, 0, .3);
+  border: 1px solid rgb(249, 249, 249);
+`;
+
+const AddList = styled.div`
+  margin-right: 16px;
+  height: 44px;
+  width: 44px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(8, 0, 8, .8);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid rgba(249, 249, 249);
+
+  span {
+    background: rgb(249, 249, 249);
+    display: inline-block;
+
+    &:first-child {
+      height: 2px;
+      transform: translate(1px, 0) rotate(3deg);
+      width: 16px;
+    }
+
+    &:nth-child(2) {
+      height: 16px;
+
+      width: 2px;
+      transform: translate(-8px) rotate(3deg);
+
+    }
+  }
+
+`;
+
+const GroupWatch = styled.div`
+  height: 44px;
+  width: 44px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  cursor: pointer;
+  background: white;
+
+  div {
+
+    height: 40px;
+    width: 40px;
+    background: rgba(0, 0, 0);
+    border-radius: 50%;
+
+    img {
+      width: 100%;
+    }
+  }
+
+`;
+
+const SubTitle = styled.div`
+  color: rgb(249, 249, 249);
+  font-size: 15px;
+  min-height: 20px;
+
+
+  @media (max-width: 768px) {
+    font-size: 12px;
+  }
+`;
+const Description = styled.div`
+
+  line-height: 1.4;
+  font-size: 20px;
+  padding: 16px 0px;
+  color: rgb(249, 249, 249);
+
+  @media (max-width: 768px) {
+    font-size: 14px;
+  }
+`;
 export default Detail;
+

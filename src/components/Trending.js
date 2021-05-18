@@ -2,16 +2,15 @@ import React from 'react';
 import styled from 'styled-components';
 import {Link} from 'react-router-dom';
 import {useSelector} from 'react-redux';
-import {
-  selectOriginal,
-} from '../features/movies/movieSlide';
+import {selectTrending} from '../features/movies/movieSlide';
 
-const Originals = () => {
+const Trending = () => {
 
-  const movies = useSelector(selectOriginal);
+  const movies = useSelector(selectTrending);
+
   return (
       <Container>
-        <p>Originals +</p>
+        <p>Trending +</p>
         <Content>
           {
             movies && movies.map(item=>{
@@ -24,7 +23,6 @@ const Originals = () => {
               )
             })
           }
-
         </Content>
       </Container>
   );
@@ -75,4 +73,4 @@ const Wrap = styled.div`
     border-color: rgba(249, 249, 249, .8);
   }
 `;
-export default Originals;
+export default Trending;
